@@ -9,8 +9,10 @@ router.post('/create',(req, res, next) => {
         from:req.body.from,
         date:req.body.date,
         time:req.body.time,
-        vacancy:req.body.vacancy
+        vacancy:req.body.vacancy,
+        participants: req.body.participants
     });
+
     newPool.save((err, pool)=>{
         if(err)
         res.status(500).json({errmsg:err});
@@ -26,11 +28,11 @@ router.get('/read',(req, res, next) => {
     res.status(200).json({msg:pools});
    });
    });
-
+// Need to update
 
 router.put('/update',(req, res, next) => {
     Pool.findById(req.body._id,(err,pool)=>{
-        if(err)
+            if(err)
             res.status(500).json({errmsg:err});
         pool.name=req.body.name;
         pool.to=req.body.to;
@@ -38,12 +40,49 @@ router.put('/update',(req, res, next) => {
         pool.date=req.body.date;
         pool.time=req.body.time;
         pool.vacancy=req.body.vacancy;
+        pool.participants=pool.participants.concat(req.body.participants);
         pool.save((err, pool)=>{
-            if (err)
+                if (err)
                 res.status(500).json({errmsg:err});
-            res.status(200).json({mag: pool});
+            res.status(200).json({msg: pool});
         });
 
+    })
+    });
+
+router.put('/addParticipant',(req, res, next) => {
+    Pool.findById(req.body._id,(err,pool)=>{
+            if(err)
+            res.status(500).json({errmsg:err});
+        if(pool.participants.length < pool.vacancy)
+        {
+        pool.participants=pool.participants.concat(req.body.participants);
+        pool.save((err, pool)=>{
+                if (err)
+                res.status(500).json({errmsg:err});
+            res.status(200).json({msg: pool});
+        });
+        }
+        else {
+            res.status(200).json({msg: "Limit Reached"});
+        }
+    })
+    });
+
+router.put('/delParticipant',(req, res, next) => {
+    Pool.findById(req.body._id,(err,pool)=>{
+            if(err)
+            res.status(500).json({errmsg:err});
+        for(var i = pool.participants.length - 1; i >= 0; i--) {
+            if(pool.participants[i] === req.body.participants) {
+                pool.participants.splice(i, 1);
+            }
+        }
+        pool.save((err, pool)=>{
+                if (err)
+                res.status(500).json({errmsg:err});
+            res.status(200).json({msg: pool});
+        });
     })
     });
 

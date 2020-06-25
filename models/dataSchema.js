@@ -6,7 +6,8 @@ var poolSchema = mongoose.Schema({
     from: { type: String},
     date: { type: String },
     time: { type: String },
-    vacancy: { type: Number}
+    vacancy: { type: Number},
+    participants: {type: Array}
 });
 
 module.exports= mongoose.model('Pool', poolSchema);
